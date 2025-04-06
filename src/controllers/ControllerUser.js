@@ -1,7 +1,9 @@
 const servicioUser = require("../services/ServicioUser");
 const userModel = require("../models/ModelUser");
 const TokenCreate = require("../libs/CrearToken");
+const PasswordService = require('../services/PasswordService');
 const dotenv = require("dotenv");
+const crypto = require('crypto');
 dotenv.config();
 const jwt = require("jsonwebtoken");
 // const Verificar = require("../libs/VerificarLogin");
@@ -94,5 +96,79 @@ const cerrarSesion = (req, res, next) => {
     next(error);
   }
 };
+const verificarCorreo = async (req, res, next) => {
+  try {
+    const { correo } = req.query; // Obtenemos el correo de los query params
+    
+    if (!correo) {
+      return res.status(400).json({ error: "El parámetro 'correo' es requerido" });
+    }
 
-module.exports = { login, registrarse, perfil, cerrarSesion,verificarToken };
+    const existe = await servicioUser.verificarCorreo(correo);
+    res.status(200).json({ existe });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const solicitarRecuperacion = async (req, res) => {
+  try {
+    const { correo } = req.query;
+    
+    // 1. Verificar si el correo existe
+    const usuario = await userModel.findOne({ correo });
+    if (!usuario) {
+      return res.status(404).json({ message: 'Correo no registrado' });
+    }
+
+    // 2. Generar y guardar token
+    const token = crypto.randomBytes(20).toString('hex');
+    usuario.resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex'); 
+    usuario.resetPasswordExpires = Date.now() + 3600000; // 1 hora de validez
+    await usuario.save();
+
+    // 3. Enviar correo
+    await PasswordService.sendResetEmail(correo, token);
+
+    res.status(200).json({ 
+      message: 'Correo de recuperación enviado',
+      token // Solo para desarrollo, quitar en producción
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+  // En tu método solicitarRecuperacion (ControllerUser.js)
+
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { nuevaPassword } = req.body;
+
+    // 1. Hash del token recibido para compararlo con el almacenado
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // 2. Buscar usuario con el token válido y no expirado
+    const usuario = await userModel.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!usuario) {
+      return res.status(400).json({ error: 'Token inválido o expirado' });
+    }
+
+    // 3. Actualizar contraseña y limpiar el token
+    usuario.password = nuevaPassword;
+    usuario.resetPasswordToken = undefined;
+    usuario.resetPasswordExpires = undefined;
+    await usuario.save();
+
+    res.status(200).json({ message: 'Contraseña actualizada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { login, registrarse, perfil, cerrarSesion,verificarToken,verificarCorreo,solicitarRecuperacion,resetPassword };

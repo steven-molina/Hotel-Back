@@ -32,4 +32,11 @@ const login = async (username) => {
     return error;
   }
 };
-module.exports = { registrarse, perfil, login };
+const buscarPorCorreo = async (correo) => {
+  try {
+    return await userModel.findOne({ correo }); // Busca por el campo `correo` (único en tu modelo)
+  } catch (error) {
+    throw { status: 500, message: error.message };
+  }
+};
+module.exports = { registrarse, perfil, login,buscarPorCorreo };

@@ -2,6 +2,8 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const userSchema = new Schema(
   {
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     nombreUsuario: {
       type: String,
       unique:true,

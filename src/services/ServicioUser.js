@@ -48,4 +48,12 @@ const verificarToken = async (userid) => {
     throw error
   }
 };
-module.exports = { registrarse, perfil, login, verificarUserName,verificarToken };
+const verificarCorreo = async (correo) => {
+  try {
+    const user = await usuarios.buscarPorCorreo(correo); 
+    return !!user; 
+  } catch (error) {
+    throw error;
+  }
+};
+module.exports = { registrarse, perfil, login, verificarUserName,verificarToken,verificarCorreo };
