@@ -14,6 +14,7 @@ const registrarse = async (user) => {
     throw { status: 500, message: error.message || error };
   }
 };
+
 const perfil = async (userId) => {
   try {
     const respuesta = await userModel.findById(userId, {
