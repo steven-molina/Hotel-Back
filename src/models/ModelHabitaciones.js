@@ -16,6 +16,11 @@ const habitacionSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    estado: {
+      type: String,
+      trime: true,
+      require: true,
+    },
     capacidad: {
       type: Number,
       required: true,

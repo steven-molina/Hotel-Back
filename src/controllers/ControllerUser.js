@@ -115,29 +115,25 @@ const solicitarRecuperacion = async (req, res) => {
   try {
     const { correo } = req.query;
     
-    // 1. Verificar si el correo existe
     const usuario = await userModel.findOne({ correo });
     if (!usuario) {
       return res.status(404).json({ message: 'Correo no registrado' });
     }
 
-    // 2. Generar y guardar token
     const token = crypto.randomBytes(20).toString('hex');
     usuario.resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex'); 
-    usuario.resetPasswordExpires = Date.now() + 3600000; // 1 hora de validez
+    usuario.resetPasswordExpires = Date.now() + 3600000; 
     await usuario.save();
 
-    // 3. Enviar correo
     await PasswordService.sendResetEmail(correo, token);
 
     res.status(200).json({ 
       message: 'Correo de recuperación enviado',
-      token // Solo para desarrollo, quitar en producción
+      token 
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-  // En tu método solicitarRecuperacion (ControllerUser.js)
 
 };
 

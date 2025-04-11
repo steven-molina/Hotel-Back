@@ -17,7 +17,7 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false })); //entiende datos de un formulario
+app.use(express.urlencoded({ extended: false }));
 app.use("/api", rutaUser);
 app.use("/api", rutaHabitacion);
 //app.use("/api", rutaResena);
