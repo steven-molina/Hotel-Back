@@ -146,10 +146,8 @@ const resetPassword = async (req, res) => {
     const { token } = req.params;
     const { nuevaPassword } = req.body;
 
-    // 1. Hash del token recibido para compararlo con el almacenado
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
-    // 2. Buscar usuario con el token válido y no expirado
     const usuario = await userModel.findOne({
       resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() }
@@ -159,7 +157,6 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ error: 'Token inválido o expirado' });
     }
 
-    // 3. Actualizar contraseña y limpiar el token
     usuario.password = nuevaPassword;
     usuario.resetPasswordToken = undefined;
     usuario.resetPasswordExpires = undefined;

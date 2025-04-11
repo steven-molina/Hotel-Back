@@ -1,7 +1,6 @@
 const habitacionModel = require("../models/ModelHabitaciones");
 const getAllHabitaciones = async () => {
   try {
-    // throw new Error("error de query")
     const habitaciones = await habitacionModel.find({});
     return habitaciones;
   } catch (error) {
@@ -18,6 +17,7 @@ const getOneHabitacion = async (id) => {
     throw { status: 500, message: error.message || error };
   }
 };
+
 const createHabitacion = async (habitacion) => {
   try {
     const respuesta = await habitacionModel.create(habitacion);
@@ -27,6 +27,7 @@ const createHabitacion = async (habitacion) => {
     throw { status: 500, message: error.message || error };
   }
 };
+
 const updateHabitacion = async (id, body) => {
   try {
     const respuesta = await habitacionModel.updateOne({ _id: id }, body);
@@ -36,6 +37,7 @@ const updateHabitacion = async (id, body) => {
     throw { status: 500, message: error.message || error };
   }
 };
+
 const deleteHabitacion = async (id) => {
   try {
     const respuesta = await habitacionModel.deleteOne({ _id: id });
