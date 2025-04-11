@@ -9,11 +9,12 @@ const jwt = require("jsonwebtoken");
 // const Verificar = require("../libs/VerificarLogin");
 const registrarse = async (req, res, next) => {
   try {
-    const { nombreUsuario, correo, password } = req.body;
+    const { nombreUsuario, correo, password, rol } = req.body;
     const usuario = {
       nombreUsuario,
       correo,
       password,
+      rol,
     };
     //ocultar contraseña
     const usernuevo = new userModel(usuario);

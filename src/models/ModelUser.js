@@ -21,6 +21,12 @@ const userSchema = new Schema(
       required:true,
       trim:true,
     },
+    rol: {
+      type: String,
+      enum: ['usuario', 'administrador'], // Solo permite estos valores
+      default: 'usuario', // Valor por defecto
+      required: true
+    }
   },
   { timestamps: true, versionKey: false }
 );

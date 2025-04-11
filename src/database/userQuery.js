@@ -7,6 +7,7 @@ const registrarse = async (user) => {
       id: respuesta._id,
       nombreUsuario: respuesta.nombreUsuario,
       correo: respuesta.correo,
+      rol: respuesta.rol,
       createdAt:respuesta.createdAt,
     };
   } catch (error) {
