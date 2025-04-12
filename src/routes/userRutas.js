@@ -9,12 +9,13 @@ const routes = express.Router();
 routes.post("/registrarse", userController.registrarse);
 routes.post("/login", userController.login);
 routes.post("/logout", userController.cerrarSesion);
-router.get('/miperfil', verificar, (req, res) => {
-    res.json({ 
+
+routes.get("/miperfil", verificar.verificarToken, (req, res) => {
+  res.json({
       message: 'Perfil de usuario',
       userRol: req.userRol
-    });
   });
+});
 
 routes.get("/verificar",verificar.verificarToken, userController.verificarToken);
 

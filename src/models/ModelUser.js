@@ -37,8 +37,6 @@ const userSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-
-
 userSchema.methods.isAdmin = function() {
   return this.rol === ROLES.ADMINISTRADOR;
 };
@@ -57,6 +55,6 @@ const userModel = model("users", userSchema);
 //verificar si el usuario es administrador
 
 
-module.exports = mongoose.model('User', userSchema);
+//module.exports = mongoose.model('users', userSchema);
 module.exports.ROLES = ROLES;
 module.exports = userModel;
