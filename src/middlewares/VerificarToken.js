@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 //MIDDLEWARES
 dotenv.config();
 const verificarToken = async (req, res, next) => {
-  // const token = req.headers["x-access-token"];
+
   const { token } = req.cookies;
   console.log(token);
   if (!token) {
@@ -11,13 +11,20 @@ const verificarToken = async (req, res, next) => {
       .status(400)
       .json({ auth: false, message: "no tiene token (permiso)" });
   }
-  // const decode =
+
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: "token invalido" });
     req.userId = user.id;
+    req.userRol = decoded.rol;
     console.log(user);
     next();
-  }); //decodificando token
-  // req.userId = decode.id;
+  }); 
 };
-module.exports = { verificarToken };
+
+const esAdmin = (req, res, next) => {
+  if (req.userRol !== 'administrador') {
+    return res.status(403).json({ message: 'Require admin role' });
+  }
+  next();
+};
+module.exports = { verificarToken, esAdmin };

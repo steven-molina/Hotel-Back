@@ -1,5 +1,8 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
+
+
+
 const userSchema = new Schema(
   {
     resetPasswordToken: String,
@@ -23,13 +26,23 @@ const userSchema = new Schema(
     },
     rol: {
       type: String,
-      enum: ['usuario', 'administrador'], // Solo permite estos valores
-      default: 'usuario', // Valor por defecto
+      enum: Object.values(ROLES),
+      default: ROLES.USUARIO,
       required: true
     }
   },
   { timestamps: true, versionKey: false }
 );
+
+const ROLES = {
+  USUARIO: 'usuario',
+  ADMINISTRADOR: 'administrador'
+};
+
+userSchema.methods.isAdmin = function() {
+  return this.rol === ROLES.ADMINISTRADOR;
+};
+
 //encriptand contraseña con bcryptjs
 userSchema.methods.ocultar = async (contrasena) => {
   const sald = await bcrypt.genSalt(10); //codigo
@@ -40,4 +53,10 @@ userSchema.methods.validarPassword = function (password) {
 };
 const userModel = model("users", userSchema);
 //const modelUser = mongoose.model("User", userSchema);
+
+//verificar si el usuario es administrador
+
+
+module.exports = mongoose.model('User', userSchema);
+module.exports.ROLES = ROLES;
 module.exports = userModel;

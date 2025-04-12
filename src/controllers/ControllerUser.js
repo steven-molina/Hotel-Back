@@ -14,7 +14,7 @@ const registrarse = async (req, res, next) => {
       nombreUsuario,
       correo,
       password,
-      rol,
+      rol: rol || User.ROLES.USUARIO,
     };
     //ocultar contraseña
     const usernuevo = new userModel(usuario);
@@ -41,14 +41,24 @@ const registrarse = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body;
-    console.log("username: ", nombreUsuario + " contraseña: ", password);
+
+    //console.log("username: ", nombreUsuario + " contraseña: ", password);
     const respuesta = await servicioUser.login(nombreUsuario, password);
     if (!respuesta) {
       return { auth: false, message: `el usuario: ${nombreUsuario} no existe` };
     }
     if (respuesta.auth) {
-      const token = TokenCreate.CrearToken(respuesta.usuario._id);
-      res.cookie("token", token);
+      const token = TokenCreate.CrearToken(respuesta.usuario._id,respuesta.usuario.rol);
+      res.cookie('token', token, { httpOnly: true });
+      res.json({ 
+        auth: true, 
+        token, 
+        user: { 
+          id: user._id, 
+          nombreUsuario: user.nombreUsuario,
+          rol: user.rol 
+        } 
+      });
     }
     res.status(200).send(respuesta);
     console.log("respuesta: ", respuesta);
