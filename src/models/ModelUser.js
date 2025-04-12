@@ -1,7 +1,10 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-
+const ROLES = {
+  USUARIO: 'usuario',
+  ADMINISTRADOR: 'administrador'
+};
 
 const userSchema = new Schema(
   {
@@ -34,10 +37,7 @@ const userSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-const ROLES = {
-  USUARIO: 'usuario',
-  ADMINISTRADOR: 'administrador'
-};
+
 
 userSchema.methods.isAdmin = function() {
   return this.rol === ROLES.ADMINISTRADOR;
