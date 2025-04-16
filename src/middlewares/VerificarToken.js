@@ -23,8 +23,33 @@ const verificarToken = async (req, res, next) => {
 
 const esAdmin = (req, res, next) => {
   if (req.userRol !== 'administrador') {
-    return res.status(403).json({ message: 'Require admin role' });
+    return res.status(403).json({ 
+      message: 'Acceso denegado: Se requiere rol de administrador' 
+    });
   }
   next();
 };
-module.exports = { verificarToken, esAdmin };
+
+const esUsuario = (req, res, next) => {
+  if (req.userRol !== 'usuario') {
+    return res.status(403).json({ 
+      message: 'Acceso denegado: Se requiere rol de usuario' 
+    });
+  }
+  next();
+};
+
+const esPropietarioOAdmin = (req, res, next) => {
+  if (req.userRol === 'administrador') {
+    return next();
+  }
+  
+  if (req.userId !== req.params.id) {
+    return res.status(403).json({ 
+      message: 'Acceso denegado: Solo puede modificar sus propios recursos' 
+    });
+  }
+  
+  next();
+};
+module.exports = { verificarToken, esAdmin,esUsuario,esPropietarioOAdmin };
