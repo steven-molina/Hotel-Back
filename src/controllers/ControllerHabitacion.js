@@ -22,8 +22,9 @@ const getOneHabitacion = async (req, res) => {
 };
 const createHabitacion = async (req, res) => {
   try {
-    const { nombre, imagen, descripcion,capacidad,caracteristicas,precio } = req.body;
+    const {identificador, nombre, imagen, descripcion,capacidad,caracteristicas,precio } = req.body;
     const habitacionNueva = {
+      identificador,
       nombre,
       imagen,
       descripcion,
@@ -60,7 +61,7 @@ const deleteHabitacion = async (req, res) => {
     const respuesta = await servicioHabitacion.deleteHabitacion(id);
     res
       .status(200)
-      .send({ status: "usuario eliminado " + id, data: respuesta });
+      .send({ status: "Habitacion ELiminado" + id, data: respuesta });
   } catch (error) {
     res
       .status(error.status || 500)

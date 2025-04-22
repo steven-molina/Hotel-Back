@@ -5,6 +5,11 @@ const TipoCategoria = {
 };
 const servicioSchema = new mongoose.Schema(
   {
+    identificador: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     nombre: {
       type: String,
       unique: true,
@@ -26,10 +31,10 @@ const servicioSchema = new mongoose.Schema(
       trim: true,
     },
     categoria: {
-        type: String,
-        enum: Object.values(ROLES),
-        default: TipoCategoria.SERVICIO,
-        required: true
+      type: String,
+      enum: Object.values(ROLES),
+      default: TipoCategoria.SERVICIO,
+      required: true
     },
     precio: {
       type: Number,

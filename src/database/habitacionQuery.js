@@ -10,7 +10,7 @@ const getAllHabitaciones = async () => {
 };
 const getOneHabitacion = async (id) => {
   try {
-    const respuesta = await habitacionModel.findOne({ _id: id });
+    const respuesta = await habitacionModel.findOne({ identificador: id });
     return respuesta;
   } catch (error) {
     console.log(error.message);
@@ -30,7 +30,7 @@ const createHabitacion = async (habitacion) => {
 
 const updateHabitacion = async (id, body) => {
   try {
-    const respuesta = await habitacionModel.updateOne({ _id: id }, body);
+    const respuesta = await habitacionModel.updateOne({ identificador: id }, body);
     return respuesta;
   } catch (error) {
     console.log(error.message);
@@ -40,7 +40,7 @@ const updateHabitacion = async (id, body) => {
 
 const deleteHabitacion = async (id) => {
   try {
-    const respuesta = await habitacionModel.deleteOne({ _id: id });
+    const respuesta = await habitacionModel.deleteOne({ identificador: id });
     return respuesta;
   } catch (error) {
     console.log(error.message);

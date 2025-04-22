@@ -40,7 +40,7 @@ const createReserva = async (habitacion) => {
 };
 const updateReserva = async (id, body) => {
   try {
-    const respuesta = await reservasModel.updateOne({ _id: id }, body);
+    const respuesta = await reservasModel.updateOne({ identificador: id }, body);
     return respuesta;
   } catch (error) {
     console.log(error.message);
@@ -49,7 +49,7 @@ const updateReserva = async (id, body) => {
 };
 const deleteReserva = async (id) => {
   try {
-    const respuesta = await reservasModel.deleteOne({ _id: id });
+    const respuesta = await reservasModel.deleteOne({ identificador: id });
     return respuesta;
   } catch (error) {
     console.log(error.message);

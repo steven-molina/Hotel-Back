@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const habitacionSchema = new mongoose.Schema(
   {
+    identificador: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     nombre: {
       type: String,
       unique: true,
