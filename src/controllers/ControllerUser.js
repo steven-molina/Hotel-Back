@@ -54,8 +54,8 @@ const login = async (req, res, next) => {
         auth: true, 
         token, 
         user: { 
-          nombreUsuario: user.nombreUsuario,
-          rol: user.rol 
+          nombreUsuario: respuesta.nombreUsuario,
+          rol: respuesta.rol 
         } 
       });
     }
