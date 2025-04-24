@@ -8,8 +8,8 @@ const routes = express.Router();
 routes.get("/reservas",verificarToken, esAdmin,controller.getAllReservas);
 routes.get("/reservasuser/:id",verificarToken, esUsuario, controller.getReservasUser);
 routes.get("/reservas/:id", verificarToken, esAdmin, controller.getOneReserva);
-routes.post("/createreserva",verificarToken, esPropietarioOAdmin, controller.createReserva);
+routes.post("/createreserva",verificarToken, esAdmin, controller.createReserva);
 routes.put("/reserva/:id", verificarToken, esAdmin,controller.updateReserva);
-routes.delete("/reservas/:id",verificarToken, esPropietarioOAdmin, controller.deleteReserva);
+routes.delete("/reservas/:id",verificarToken, esAdmin, controller.deleteReserva);
 
 module.exports = routes;

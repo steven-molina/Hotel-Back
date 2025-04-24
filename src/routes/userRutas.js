@@ -8,7 +8,7 @@ const routes = express.Router();
 // Add routes
 routes.post("/registrarse", userController.registrarse);
 routes.post("/login", userController.login);
-routes.post("/logout",verificar.verificarToken,verificar.esPropietarioOAdmin, userController.cerrarSesion);
+routes.post("/logout",verificar.verificarToken, userController.cerrarSesion);
 
 routes.get("/miperfil", verificar.verificarToken, (req, res) => {
   res.json({
