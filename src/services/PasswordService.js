@@ -15,8 +15,15 @@ const sendResetEmail = async (email, token) => {
 
   const mailOptions = {
     to: email,
-    subject: 'Recuperación de Contraseña',
-    html: `<p>Haz clic <a href="http://localhost:4000/reset-password/${token}">aquí</a> para restablecer tu contraseña.</p>`
+    subject: 'Recuperación de Contraseña', 
+    html: `
+    <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+    <a href="${process.env.BACKEND}/api/reset-password/${token}">
+      Restablecer contraseña
+    </a>
+    <p>Si no solicitaste este cambio, ignora este mensaje.</p>
+  `
+    
   };
 
   await transporter.sendMail(mailOptions);

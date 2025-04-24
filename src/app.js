@@ -2,7 +2,8 @@
 require('dotenv').config();
 const express = require("express");
 const rutaUser = require("./routes/userRutas");
-const rutaHabitacion= require("./routes/habitacionRutas")
+const rutaHabitacion = require("./routes/habitacionRutas")
+const rutaServicio = require("./routes/servicioRutas")
 //const rutaResena = require("./routes/resenaRutas")
 //const rutaEmpleado = require("./routes/empleadoRutas")
 const  rutaReserva=require("./routes/reservasRutas")
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use("/api", rutaUser);
 app.use("/api", rutaHabitacion);
+app.use("/api", rutaServicio);
 //app.use("/api", rutaResena);
 //app.use("/api", rutaEmpleado);
 app.use("/api", rutaReserva);

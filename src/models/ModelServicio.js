@@ -32,7 +32,7 @@ const servicioSchema = new mongoose.Schema(
     },
     categoria: {
       type: String,
-      enum: Object.values(ROLES),
+      enum: Object.values(TipoCategoria),
       default: TipoCategoria.SERVICIO,
       required: true
     },
