@@ -54,7 +54,6 @@ const login = async (req, res, next) => {
         auth: true, 
         token, 
         user: { 
-          id: user._id, 
           nombreUsuario: user.nombreUsuario,
           rol: user.rol 
         } 
