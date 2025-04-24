@@ -153,7 +153,7 @@ const resetPassword = async (req, res) => {
     const { nuevaPassword } = req.body;
 
     const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
+ 
     const usuario = await userModel.findOne({
       resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() }
