@@ -162,8 +162,7 @@ const resetPassword = async (req, res) => {
     if (!usuario) {
       return res.status(400).json({ error: 'Token inválido o expirado' });
     }
-
-    usuario.password = nuevaPassword;
+    usuario.password = await usernuevo.ocultar(nuevaPassword);
     usuario.resetPasswordToken = undefined;
     usuario.resetPasswordExpires = undefined;
     await usuario.save();
