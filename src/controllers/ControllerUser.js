@@ -7,6 +7,7 @@ const crypto = require('crypto');
 dotenv.config();
 const jwt = require("jsonwebtoken");
 // const Verificar = require("../libs/VerificarLogin");
+
 const registrarse = async (req, res, next) => {
   try {
     const { identificacion,nombreUsuario, correo, password, rol } = req.body;
@@ -15,7 +16,7 @@ const registrarse = async (req, res, next) => {
       nombreUsuario,
       correo,
       password,
-      rol: rol || User.ROLES.USUARIO,
+      rol: rol || "usuario",
     };
     //ocultar contraseña
     const usernuevo = new userModel(usuario);
@@ -42,26 +43,31 @@ const registrarse = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body;
-
-    //console.log("username: ", nombreUsuario + " contraseña: ", password);
     const respuesta = await servicioUser.login(nombreUsuario, password);
+    
     if (!respuesta) {
-      return { auth: false, message: `el usuario: ${nombreUsuario} no existe` };
-    }
-    if (respuesta.auth) {
-      const token = TokenCreate.CrearToken(respuesta.usuario._id,respuesta.usuario.rol);
-      res.cookie('token', token, { httpOnly: true });
-      res.json({ 
-        auth: true, 
-        token, 
-        user: { 
-          nombreUsuario: respuesta.nombreUsuario,
-          rol: respuesta.rol 
-        } 
+      return res.status(404).json({ 
+        auth: false, 
+        message: `El usuario: ${nombreUsuario} no existe` 
       });
     }
-    res.status(200).send(respuesta);
-    console.log("respuesta: ", respuesta);
+
+    if (!respuesta.auth) {
+      return res.status(401).json(respuesta);
+    }
+
+    const token = TokenCreate.CrearToken(respuesta.usuario._id, respuesta.usuario.rol);
+    res.cookie('token', token, { httpOnly: true });
+    
+    return res.json({ 
+      auth: true, 
+      token, 
+      user: { 
+        nombreUsuario: respuesta.usuario.nombreUsuario, 
+        rol: respuesta.usuario.rol 
+      } 
+    });
+
   } catch (error) {
     next(error);
   }
