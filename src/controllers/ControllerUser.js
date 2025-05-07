@@ -71,30 +71,15 @@ const login = async (req, res, next) => {
     const { nombreUsuario, password } = req.body;
     console.log("username: ", nombreUsuario + " contraseña: ", password);
     const respuesta = await servicioUser.login(nombreUsuario, password);
-    console.log("respuesta:", respuesta)
     if (!respuesta) {
-      return res.status(404).json({ 
-        auth: false, 
-        message: `El usuario: ${nombreUsuario} no existe` 
-      });
+      return { auth: false, message: `el usuario: ${nombreUsuario} no existe` };
     }
-
-    if (!respuesta.auth) {
-      return res.status(401).json(respuesta);
+    if (respuesta.auth) {
+      const token = TokenCreate.CrearToken(respuesta.usuario._id);
+      res.cookie("token", token);
     }
-
-    const token = TokenCreate.CrearToken(respuesta.usuario._id, respuesta.usuario.rol);
-    res.cookie('token', token, { httpOnly: true });
-    
-    return res.json({ 
-      auth: true, 
-      token, 
-      user: { 
-        nombreUsuario: respuesta.usuario.nombreUsuario, 
-        rol: respuesta.usuario.rol 
-      } 
-    });
-
+    res.status(200).send(respuesta);
+    console.log("respuesta: ", respuesta);
   } catch (error) {
     next(error);
   }
