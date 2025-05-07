@@ -69,17 +69,43 @@ const registrarse = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body;
-    console.log("username: ", nombreUsuario + " contraseña: ", password);
+
     const respuesta = await servicioUser.login(nombreUsuario, password);
-    if (!respuesta) {
-      return { auth: false, message: `el usuario: ${nombreUsuario} no existe` };
+    
+    // Si no hay respuesta o la autenticación falla
+    if (!respuesta || !respuesta.auth) {
+      return res.status(401).json({ 
+        auth: false, 
+        message: 'Usuario o contraseña incorrectos' 
+      });
     }
-    if (respuesta.auth) {
-      const token = TokenCreate.CrearToken(respuesta.usuario._id,respuesta.usuario.rol);
-      res.cookie("token", token);
-    }
-    res.status(200).send(respuesta);
-    console.log("respuesta: ", respuesta);
+
+    // Crear token (incluyendo el rol pero sin afectar al frontend)
+    const token = TokenCreate.CrearToken(respuesta.usuario._id, respuesta.usuario.rol);
+    
+    // Configurar cookie (el frontend no necesita saber del token)
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+
+    // Preparar respuesta compatible con el frontend actual
+    const respuestaFrontend = {
+      auth: true,
+      usuario: {
+        _id: respuesta.usuario._id,
+        nombreUsuario: respuesta.usuario.nombreUsuario,
+        // Incluir todos los campos que el frontend pueda necesitar
+        correo: respuesta.usuario.correo,
+        // IMPORTANTE: No incluir la contraseña
+        rol: respuesta.usuario.rol // Solo si el frontend lo usa
+      }
+    };
+
+    // Enviar respuesta compatible
+    return res.status(200).json(respuestaFrontend);
+
   } catch (error) {
     next(error);
   }
