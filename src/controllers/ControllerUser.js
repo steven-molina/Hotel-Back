@@ -71,7 +71,7 @@ const login = async (req, res, next) => {
     const { nombreUsuario, password } = req.body;
     console.log("username: ", nombreUsuario + " contraseña: ", password);
     const respuesta = await servicioUser.login(nombreUsuario, password);
-    console.Log("respuesta:", respuesta)
+    console.log("respuesta:", respuesta)
     if (!respuesta) {
       return res.status(404).json({ 
         auth: false, 
