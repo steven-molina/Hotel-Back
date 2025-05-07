@@ -5,13 +5,13 @@ const verificar = require("../middlewares/VerificarToken");
 
 const routes = express.Router();
 // Add routes
-routes.get("/solicitudes", verificar.verificarToken,controller.getAllServicios);
+routes.get("/solicitudes", verificar.verificarToken,controller.getAllSolicitudes);
 
-routes.get("/solicitudes/:id", verificar.verificarToken, controller.getOneServicio);
+routes.get("/solicitudes/:id", verificar.verificarToken, controller.getOneSolicitud);
 
-routes.post("/solicitudes", verificar.verificarToken,verificar.esUsuario, controller.createServicio);
+routes.post("/solicitudes", verificar.verificarToken,verificar.esUsuario, controller.createSolicitud);
 
 routes.delete("/solicitudes/:idHuesped/:idServicio", verificar.verificarToken,verificar.esUsuario,verificar.esAdmin,
-      controller.deleteServicio);
+      controller.deleteSolicitud);
 
 module.exports = routes;
