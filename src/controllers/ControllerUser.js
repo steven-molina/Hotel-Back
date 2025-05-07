@@ -75,7 +75,7 @@ const login = async (req, res, next) => {
       return { auth: false, message: `el usuario: ${nombreUsuario} no existe` };
     }
     if (respuesta.auth) {
-      const token = TokenCreate.CrearToken(respuesta.usuario._id);
+      const token = TokenCreate.CrearToken(respuesta.usuario._id,respuesta.usuario.rol);
       res.cookie("token", token);
     }
     res.status(200).send(respuesta);
