@@ -11,31 +11,57 @@ const jwt = require("jsonwebtoken");
 const registrarse = async (req, res, next) => {
   try {
     const { identificacion,nombreUsuario, correo, password, rol } = req.body;
-    const usuario = {
-      identificacion,
-      nombreUsuario,
-      correo,
-      password,
-      rol: rol || "usuario",
-    };
-    //ocultar contraseña
-    const usernuevo = new userModel(usuario);
-    usernuevo.password = await usernuevo.ocultar(usuario.password);
-
-    token = await TokenCreate.CrearToken(usernuevo.id);
-    
     const userExiste = await servicioUser.verificarUserName(nombreUsuario);
     if (userExiste) {
       return res
         .status(400)
         .json({ mensaje: ["el nombre de usuario ya existe"] });
     }
-    const respuesta = await servicioUser.registrarse(usernuevo);
-    console.log("usuario. ", respuesta);
-    res.cookie("token", token);
-    res.status(200).send(respuesta);
-    // res.json({auth:true,token:respuesta});
+
+   
+    const usuario = {
+      identificacion,
+      nombreUsuario,
+      correo,
+      password, 
+    };
+
+    const usernuevo = new userModel(usuario);
+    usernuevo.password = await usernuevo.ocultar(password);
+
+    const usuarioGuardado = await servicioUser.registrarse(usernuevo);
+    
+    const token = await TokenCreate.CrearToken(usuarioGuardado._id, usuarioGuardado.rol);
+    
+    res.cookie("token", token, { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: 'strict'
+    });
+
+    return res.status(201).json({
+      auth: true,
+      token,
+      usuario: {
+        id: usuarioGuardado._id,
+        nombreUsuario: usuarioGuardado.nombreUsuario,
+        correo: usuarioGuardado.correo,
+        rol: usuarioGuardado.rol,
+        identificacion: usuarioGuardado.identificacion
+      }
+    });
+
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      const mensajesError = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ mensaje: mensajesError });
+    }
+    if (error.code === 11000) {
+      const campoDuplicado = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({ 
+        mensaje: [`El ${campoDuplicado} ya está registrado`] 
+      });
+    }
     next(error);
   }
 };
