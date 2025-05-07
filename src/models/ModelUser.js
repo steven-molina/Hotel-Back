@@ -10,6 +10,12 @@ const userSchema = new Schema(
   {
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    identificacion: {
+      type: String,
+      unique:true,
+      required:true,
+      trim:true,
+    },
     nombreUsuario: {
       type: String,
       unique:true,

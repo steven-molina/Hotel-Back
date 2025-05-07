@@ -7,6 +7,7 @@ const rutaServicio = require("./routes/servicioRutas")
 //const rutaResena = require("./routes/resenaRutas")
 //const rutaEmpleado = require("./routes/empleadoRutas")
 const  rutaReserva=require("./routes/reservasRutas")
+const rutaSolicitud = require("./routes/solicitudRutas")
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
@@ -25,5 +26,6 @@ app.use("/api", rutaServicio);
 //app.use("/api", rutaResena);
 //app.use("/api", rutaEmpleado);
 app.use("/api", rutaReserva);
+app.use("/api", rutaSolicitud);
 app.use(require("./middlewares/Errores").ManejoError);
 module.exports = app;

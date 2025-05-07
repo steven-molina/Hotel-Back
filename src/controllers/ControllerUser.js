@@ -11,6 +11,7 @@ const registrarse = async (req, res, next) => {
   try {
     const { nombreUsuario, correo, password, rol } = req.body;
     const usuario = {
+      identificacion,
       nombreUsuario,
       correo,
       password,
