@@ -70,44 +70,47 @@ const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body;
 
-    const respuesta = await servicioUser.login(nombreUsuario, password);
+    const usuario = await userModel.findOne({ nombreUsuario });
     
-    // Si no hay respuesta o la autenticación falla
-    if (!respuesta || !respuesta.auth) {
-      return res.status(401).json({ 
-        auth: false, 
-        message: 'Usuario o contraseña incorrectos' 
+    if (!usuario) {
+      return res.status(200).json({ 
+        auth: false,
+        message: 'Usuario no encontrado' 
       });
     }
 
-    // Crear token (incluyendo el rol pero sin afectar al frontend)
-    const token = TokenCreate.CrearToken(respuesta.usuario._id, respuesta.usuario.rol);
-    
-    // Configurar cookie (el frontend no necesita saber del token)
+    const contraseñaValida = await usuario.validarPassword(password);
+    if (!contraseñaValida) {
+      return res.status(200).json({ 
+        auth: false,
+        message: 'Contraseña incorrecta' 
+      });
+    }
+
+    const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
+
+    // 5. Configurar cookie silently
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict'
     });
 
-    // Preparar respuesta compatible con el frontend actual
-    const respuestaFrontend = {
+    // 6. Respuesta EXACTA que espera el frontend
+    return res.status(200).json({
       auth: true,
       usuario: {
-        _id: respuesta.usuario._id,
-        nombreUsuario: respuesta.usuario.nombreUsuario,
-        // Incluir todos los campos que el frontend pueda necesitar
-        correo: respuesta.usuario.correo,
-        // IMPORTANTE: No incluir la contraseña
-        rol: respuesta.usuario.rol // Solo si el frontend lo usa
+        nombreUsuario: usuario.nombreUsuario,
       }
-    };
-
-    // Enviar respuesta compatible
-    return res.status(200).json(respuestaFrontend);
+    });
 
   } catch (error) {
-    next(error);
+    // 7. Manejo de errores compatible
+    console.error("Error en login:", error);
+    return res.status(200).json({ 
+      auth: false,
+      message: 'Error en el servidor' 
+    });
   }
 };
 //navegar
