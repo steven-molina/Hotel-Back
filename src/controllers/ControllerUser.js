@@ -17,7 +17,6 @@ const registrarse = async (req, res, next) => {
         .status(400)
         .json({ mensaje: ["el nombre de usuario ya existe"] });
     }
-
    
     const usuario = {
       identificacion,
@@ -69,7 +68,6 @@ const registrarse = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { nombreUsuario, password } = req.body;
-
     const usuario = await userModel.findOne({ nombreUsuario });
     
     if (!usuario) {
@@ -78,7 +76,6 @@ const login = async (req, res, next) => {
         message: 'Usuario no encontrado' 
       });
     }
-
     const contraseñaValida = await usuario.validarPassword(password);
     if (!contraseñaValida) {
       return res.status(200).json({ 
@@ -88,15 +85,11 @@ const login = async (req, res, next) => {
     }
 
     const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
-
-    // 5. Configurar cookie silently
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict'
     });
-
-    // 6. Respuesta EXACTA que espera el frontend
     return res.status(200).json({
       auth: true,
       usuario: {
@@ -105,7 +98,6 @@ const login = async (req, res, next) => {
     });
 
   } catch (error) {
-    // 7. Manejo de errores compatible
     console.error("Error en login:", error);
     return res.status(200).json({ 
       auth: false,
