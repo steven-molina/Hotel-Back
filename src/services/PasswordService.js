@@ -18,7 +18,7 @@ const sendResetEmail = async (email, token) => {
     subject: 'Recuperación de Contraseña', 
     html: `
     <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-    <a href="${process.env.FRONTEND1}/reset-password/${token}">
+    <a href="https://hotel-front-smoky.vercel.app/ResetPassword/${token}">
       Restablecer contraseña
     </a>
     <p>Si no solicitaste este cambio, ignora este mensaje.</p>
