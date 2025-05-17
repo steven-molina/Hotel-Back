@@ -1,88 +1,55 @@
 const mongoose = require("mongoose");
+
 const reservaSchema = new mongoose.Schema(
   {
     identificador: {
       type: String,
       required: true,
       trim: true,
+      unique: true
     },
     reservas: {
-      fechaIngreso: {
-        type: Date,
-        required: true,
-        trim: true,
-      },
-      fechaSalida: {
-        type: Date,
-        required: true,
-        trim: true,
-      },
-      adultos: {
-        type: Number,
-        required: true,
-        trim: true,
-      },
-      niños: {
-        type: Number,
-        required: true,
-        trim: true,
-      },
-      habitacion: {
-        type: String,
-        required: true,
-        trim: true,
-      },
+      fechaIngreso: { type: Date, required: true },
+      fechaSalida: { type: Date, required: true },
+      adultos: { type: Number, required: true },
+      niños: { type: Number, required: true },
+      habitacion: { type: String, required: true }
     },
     contacto: {
-      nombre: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      apellido: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      correo: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      telefono: {
-        type: Number,
-        required: true,
-        trim: true,
-      },
+      nombre: { type: String, required: true },
+      apellido: { type: String, required: true },
+      correo: { type: String, required: true },
+      telefono: { type: Number, required: true }
     },
     pago: {
-      titular: {
-        type: String,
-        required: true,
-        trim: true,
+      metodo: { 
+        type: String, 
+        enum: ['efectivo', 'tarjeta', 'transferencia'], 
+        required: true 
       },
       tarjeta: {
-        type: Number,
-        required: true,
-        trim: true,
+        titular: { type: String },
+        numero: { type: Number },
+        fechaVencimiento: { type: Date },
+        cvv: { type: Number }
       },
-      fechaVencimiento: {
-        type: Date,
-        required: true,
-        trim: true,
+      transferencia: {
+        referencia: { type: String },
+        banco: { type: String }
       },
-      cvv: {
-        type: Number,
-        required: true,
-        trim: true,
-      },
+      montoPagado: { type: Number, required: true },
+      fechaPago: { type: Date }
     },
-    precio: {
-      type: Number,
-      required: true,
+    precioTotal: { type: Number, required: true },
+    estado: { 
+      type: String, 
+      enum: ['pendiente', 'pagada', 'cancelada'], 
+      default: 'pendiente' 
     },
+    checkOutConfirmado: { type: Boolean, default: false }
   },
   { timestamps: true, versionKey: false }
 );
+
 const reservasModel = mongoose.model("reservas", reservaSchema);
 module.exports = reservasModel;

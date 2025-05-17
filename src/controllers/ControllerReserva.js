@@ -34,33 +34,34 @@ const getOneReserva = async (req, res) => {
 };
 const createReserva = async (req, res) => {
   try {
-    if (!req.userId) {
-      return res.status(401).json({ 
-        status: "FAILED",
-        message: "No autenticado. Por favor inicie sesión." 
-      });
-    }
-    const { identificador, reservas, contacto,pago,precio } = req.body;
+    
+    const { identificador, reservas, contacto, precioTotal } = req.body;
+    
     const reservaNueva = {
       identificador,
       reservas,
       contacto,
-      pago,
-      precio,
+      precioTotal, 
       usuarioId: req.userId,  
-      creadoPor: req.userRol 
+      creadoPor: req.userRol,
+      estado: 'pendiente'
     };
-    console.log("----reserva--:", reservaNueva);
+    
     const crearReserva = await servicioReserva.createReserva(reservaNueva);
+    
     const responseData = {
       identificador: crearReserva.identificador,
-      precio: crearReserva.precio,
+      precioTotal: crearReserva.precioTotal,
       estado: crearReserva.estado,
-      fechaCreacion: crearReserva.createdAt
+      fechaCreacion: crearReserva.createdAt,
+      links: {
+        realizarPago: `/api/reservas/${crearReserva.identificador}/pagos`
+      }
     };
+    
     res.status(201).json({ 
       status: "OK", 
-      message: "Reserva creada exitosamente",
+      message: "Reserva creada exitosamente. Proceda con el pago para confirmar.",
       data: responseData
     });
   } catch (error) {
@@ -70,12 +71,12 @@ const createReserva = async (req, res) => {
         status: "FAILED",
         message: "El identificador de reserva ya existe"
       });
-    }
+    }/*
     res.status(500).json({ 
       status: "FAILED",
       message: "Error interno al procesar la reserva",
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    });*/
   }
 };
 const updateReserva = async (req, res) => {
