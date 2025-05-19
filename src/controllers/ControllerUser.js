@@ -94,6 +94,7 @@ const login = async (req, res, next) => {
       auth: true,
       usuario: {
         nombreUsuario: usuario.nombreUsuario,
+        rol: usuario.rol,
       }
     });
 
