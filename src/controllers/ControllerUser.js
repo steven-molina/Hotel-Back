@@ -87,8 +87,9 @@ const login = async (req, res, next) => {
     const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      secure: process.env.NODE_ENV === 'production', // true en producción
+      sameSite: 'none', // Importante para cross-site
+      maxAge: 24 * 60 * 60 * 1000, // 1 día
     });
     return res.status(200).json({
       auth: true,
