@@ -83,6 +83,8 @@ const login = async (req, res, next) => {
         message: 'Contraseña incorrecta' 
       });
     }
+    
+    const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
 
     res.cookie('token', token, {
       httpOnly: true,
