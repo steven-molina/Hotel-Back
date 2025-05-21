@@ -1,4 +1,8 @@
 const mongoose = require("mongoose");
+const ESTADO = {
+  DISPONIBLE: 'disponible',
+  OCUPADO: 'ocupado'
+};
 const habitacionSchema = new mongoose.Schema(
   {
     identificador: {
@@ -23,8 +27,9 @@ const habitacionSchema = new mongoose.Schema(
     },
     estado: {
       type: String,
-      trime: true,
-      require: true,
+      enum: Object.values(ESTADO),
+      default: ESTADO.OCUPADO,
+      required: true
     },
     capacidad: {
       type: Number,

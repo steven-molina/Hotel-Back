@@ -23,13 +23,25 @@ const getOneHabitacion = async (req, res) => {
 const createHabitacion = async (req, res) => {
   try {
     const {identificador, nombre, imagen, descripcion,capacidad,caracteristicas,precio } = req.body;
+     // Convertir imágenes a Base64 si vienen como archivos
+    let imagenesBase64 = [];
+    if (req.files?.imagen) {
+      const files = Array.isArray(req.files.imagen) ? req.files.imagen : [req.files.imagen];
+      for (const file of files) {
+        const base64 = file.buffer.toString('base64');
+        imagenesBase64.push(`data:${file.mimetype};base64,${base64}`);
+      }
+    } else if (Array.isArray(imagen)) {
+      imagenesBase64 = imagen;
+    }
+    
     const habitacionNueva = {
       identificador,
       nombre,
-      imagen,
+      imagen: imagenesBase64,
       descripcion,
       capacidad,
-      caracteristicas,
+      caracteristicas: Array.isArray(caracteristicas) ? caracteristicas : [caracteristicas],
       precio
     };
     console.log("----Habitacion--:", habitacionNueva);
