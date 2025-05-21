@@ -84,18 +84,22 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // true en producción
-      sameSite: 'none', // Importante para cross-site
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 1 día
+      domain: process.env.COOKIE_DOMAIN || 'localhost',
+      path: '/'
     });
-    return res.status(200).json({
+
+    return res.json({
       auth: true,
+      token, // También envía el token en la respuesta
       usuario: {
+        id: usuario._id,
         nombreUsuario: usuario.nombreUsuario,
-        rol: usuario.rol,
+        rol: usuario.rol
       }
     });
 
