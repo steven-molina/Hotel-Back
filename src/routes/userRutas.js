@@ -24,13 +24,9 @@ routes.get("/verificarcorreo", userController.verificarCorreo);
 routes.get('/solicitar-recuperacion', userController.solicitarRecuperacion);
 routes.post('/reset-password/:token', userController.resetPassword);
 
-//actualizar:
-
-
-// routes.get("/prueba",verificar.verificarToken,(req,res)=>{
-//     res.send("reseñas")
-// })
-// routes.put('/', SessionController.store);
-// routes.delete('/', SessionController.store);
+router.get('/verify', verificarToken, (req, res) => {
+  // Si el middleware pasa, el token es válido
+  res.status(200).json({ auth: true, usuario: req.user });
+});
 
 module.exports = routes;
