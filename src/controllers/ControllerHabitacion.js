@@ -11,8 +11,8 @@ const getAllHabitaciones = async (req, res) => {
 };
 const getOneHabitacion = async (req, res) => {
   try {
-    const id = req.params.id;
-    const oneUser = await servicioHabitacion.getOneHabitacion(id);
+    const identificador = req.params.identificador;
+    const oneUser = await servicioHabitacion.getOneHabitacion(identificador);
     res.status(200).send({ status: "OK", data: oneUser });
   } catch (error) {
     res
@@ -128,7 +128,7 @@ const updateHabitacion = async (req, res) => {
     const respuesta = await servicioHabitacion.updateHabitacion(identificador, body);
     
     // Obtener la habitación actualizada para devolverla
-    const habitacionActualizada = await servicioHabitacion.getHabitacionById(identificador);
+    const habitacionActualizada = await servicioHabitacion.getOneHabitacion(identificador);
     
     res.status(200).send({ 
       status: "habitacion actualizada: " + habitacionActualizada.nombre, 

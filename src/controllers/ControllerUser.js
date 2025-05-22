@@ -83,10 +83,6 @@ const login = async (req, res, next) => {
         message: 'Contraseña incorrecta'
       });
     }
-    res.clearCookie('token', {
-      path: '/',
-      domain: process.env.COOKIE_DOMAIN || 'localhost'
-    });
 
     const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
 
