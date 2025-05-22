@@ -38,6 +38,10 @@ const verificarToken = async (req, res, next) => {
       switch (err.name) {
         case "TokenExpiredError":
           mensaje = "Token expirado";
+          res.clearCookie('token', {
+            path: '/',
+            domain: process.env.COOKIE_DOMAIN || 'localhost'
+          });
           break;
         case "JsonWebTokenError":
           mensaje = "Token mal formado o manipulado";
@@ -61,13 +65,13 @@ const verificarToken = async (req, res, next) => {
     req.userRol = user.rol;
     console.log(user);
     next();
-  }); 
+  });
 };
 
 const esAdmin = (req, res, next) => {
   if (req.userRol !== 'administrador') {
-    return res.status(403).json({ 
-      message: 'Acceso denegado: Se requiere rol de administrador' 
+    return res.status(403).json({
+      message: 'Acceso denegado: Se requiere rol de administrador'
     });
   }
   next();
@@ -75,8 +79,8 @@ const esAdmin = (req, res, next) => {
 
 const esUsuario = (req, res, next) => {
   if (req.userRol !== 'usuario') {
-    return res.status(403).json({ 
-      message: 'Acceso denegado: Se requiere rol de usuario' 
+    return res.status(403).json({
+      message: 'Acceso denegado: Se requiere rol de usuario'
     });
   }
   next();
@@ -86,13 +90,13 @@ const esPropietarioOAdmin = (req, res, next) => {
   if (req.userRol === 'administrador') {
     return next();
   }
-  
+
   if (req.userId !== req.params.id) {
-    return res.status(403).json({ 
-      message: 'Acceso denegado: Solo puede modificar sus propios recursos' 
+    return res.status(403).json({
+      message: 'Acceso denegado: Solo puede modificar sus propios recursos'
     });
   }
-  
+
   next();
 };
-module.exports = { verificarToken, esAdmin,esUsuario,esPropietarioOAdmin };
+module.exports = { verificarToken, esAdmin, esUsuario, esPropietarioOAdmin };
