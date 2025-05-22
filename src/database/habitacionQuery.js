@@ -30,7 +30,8 @@ const createHabitacion = async (habitacion) => {
 
 const updateHabitacion = async (id, body) => {
   try {
-    const respuesta = await habitacionModel.updateOne({ identificador: id }, body);
+    const respuesta = await habitacionModel.updateOne({ identificador: id }, body,
+      { new: true, runValidators: true });
     return respuesta;
   } catch (error) {
     console.log(error.message);
@@ -41,7 +42,10 @@ const updateHabitacion = async (id, body) => {
 const deleteHabitacion = async (id) => {
   try {
     const respuesta = await habitacionModel.deleteOne({ identificador: id });
-    return respuesta;
+    return {
+      acknowledged: respuesta.acknowledged,
+      deletedCount: respuesta.deletedCount
+    };
   } catch (error) {
     console.log(error.message);
     throw { status: 500, message: error.message || error };

@@ -122,23 +122,81 @@ const createHabitacion = async (req, res) => {
   }
 };
 const updateHabitacion = async (req, res) => {
+  const debugData = {
+    body: req.body,
+    files: req.files ? req.files.map(f => ({
+      originalname: f.originalname,
+      mimetype: f.mimetype,
+      size: f.size
+    })) : null,
+    existingImages: req.body.existingImages ? JSON.parse(req.body.existingImages) : null
+  };
+
   try {
-    const body = req.body;
+    const { nombre, descripcion, capacidad, caracteristicas, precio } = req.body;
     const identificador = req.params.identificador;
-    const respuesta = await servicioHabitacion.updateHabitacion(identificador, body);
-    
-    // Obtener la habitación actualizada para devolverla
+
+    // Validación básica (igual que en creación)
+    if (!nombre || precio <= 0) {
+      throw {
+        status: 400,
+        message: "Datos inválidos: nombre y precio son requeridos"
+      };
+    }
+
+    // Procesar imágenes (igual que en creación)
+    let imagenes = [];
+    if (req.files?.length > 0) {
+      imagenes = req.files.map(file => 
+        `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+      );
+    }
+    if (req.body.existingImages) {
+      const urls = JSON.parse(req.body.existingImages);
+      if (Array.isArray(urls)) {
+        imagenes = [...imagenes, ...urls];
+      }
+    }
+
+    // Procesar características (igual que en creación)
+    let parsedCaracteristicas;
+    try {
+      parsedCaracteristicas = typeof caracteristicas === 'string' 
+        ? JSON.parse(caracteristicas) 
+        : caracteristicas;
+    } catch {
+      parsedCaracteristicas = [];
+    }
+
+    const updateData = {
+      nombre,
+      ...(imagenes.length > 0 && { imagen: imagenes }), // Solo actualiza si hay imágenes
+      descripcion: descripcion || '',
+      capacidad: Number(capacidad),
+      caracteristicas: Array.isArray(parsedCaracteristicas) 
+        ? parsedCaracteristicas 
+        : [parsedCaracteristicas],
+      precio: Number(precio)
+    };
+
+    console.log("Datos para actualizar:", updateData);
+
+    const respuesta = await servicioHabitacion.updateHabitacion(identificador, updateData);
     const habitacionActualizada = await servicioHabitacion.getOneHabitacion(identificador);
-    
+
     res.status(200).send({ 
       status: "habitacion actualizada: " + habitacionActualizada.nombre, 
-      data: habitacionActualizada,
-      message:respuesta
+      data: habitacionActualizada, // Corregido el typo
+      message: respuesta
     });
   } catch (error) {
-    res.status(error.status || 500).send({ 
-      status: "failed", 
-      data: { error: error.message || error } 
+    console.error("Error en updateHabitacion:", error);
+    res.status(error.status || 500).send({
+      status: "failed",
+      data: { 
+        error: error.message || error,
+        debugData
+      }
     });
   }
 };
@@ -146,13 +204,25 @@ const deleteHabitacion = async (req, res) => {
   try {
     const identificador = req.params.identificador;
     const respuesta = await servicioHabitacion.deleteHabitacion(identificador);
-    res
-      .status(200)
-      .send({ status: "Habitacion ELiminado" + identificador, data: respuesta });
+
+    // Verifica la estructura real de respuesta de tu servicio
+    console.log("Respuesta del servicio:", respuesta);
+
+    // Asegúrate de devolver un formato consistente
+    res.status(200).send({ 
+      status: "Habitación eliminada: " + identificador,
+      deletedCount: respuesta.deletedCount || (respuesta.acknowledged ? 1 : 0),
+      data: respuesta
+    });
   } catch (error) {
-    res
-      .status(error.status || 500)
-      .send({ status: "failed", data: { error: error.message || error } });
+    console.error("Error al eliminar:", error);
+    res.status(error.status || 500).send({
+      status: "failed",
+      data: { 
+        error: error.message || error,
+        deletedCount: 0
+      }
+    });
   }
 };
 module.exports = {

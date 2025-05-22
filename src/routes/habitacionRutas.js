@@ -32,7 +32,13 @@ routes.post(
   controller.createHabitacion
 );
 
-routes.put("/habitaciones/:identificador", verificar.verificarToken, verificar.esAdmin, controller.updateHabitacion);
+routes.put(
+  "/habitaciones/:identificador",
+  verificar.verificarToken,
+  verificar.esAdmin,
+  upload.array('imagen'), // ¡Añade esto!
+  controller.updateHabitacion
+);
 
 routes.delete("/habitaciones/:identificador", verificar.verificarToken, verificar.esAdmin,  controller.deleteHabitacion);
 
