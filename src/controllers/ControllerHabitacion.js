@@ -2,7 +2,7 @@ const servicioHabitacion = require("../services/ServicioHabitacion");
 const getAllHabitaciones = async (req, res) => {
   try {
     const habitaciones = await servicioHabitacion.getAllHabitaciones();
-    res.json({habitaciones})
+    res.json({ habitaciones })
   } catch (error) {
     res
       .status(error.status || 500)
@@ -34,7 +34,7 @@ const createHabitacion = async (req, res) => {
 
   try {
     const { identificador, nombre, descripcion, capacidad, caracteristicas, precio } = req.body;
-    
+
     // Validación básica
     if (!nombre || !identificador || precio <= 0) {
       const errorData = {
@@ -47,55 +47,63 @@ const createHabitacion = async (req, res) => {
         debugData
       };
       console.error("Error de validación:", errorData);
-      throw { 
-        status: 400, 
-        ...errorData 
+      throw {
+        status: 400,
+        ...errorData
       };
     }
 
     // Procesar imágenes
     let imagenes = [];
-    try {
-      if (req.files?.imagen) {
-        imagenes = req.files.imagen.map(file => 
-          `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
-        );
-      } else if (req.body.existingImages) {
-        imagenes = JSON.parse(req.body.existingImages);
-      }
-    } catch (error) {
-      console.error("Error procesando imágenes:", error);
-      throw {
-        status: 400,
-        message: "Error procesando imágenes",
-        imageError: error.message,
-        debugData
-      };
+    // Procesar archivos subidos
+    if (req.files && req.files.length > 0) {
+      const imagenesSubidas = req.files.map(file =>
+        `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+      );
+      imagenes = imagenes.concat(imagenesSubidas);
     }
 
+    // Procesar URLs desde frontend
+    if (req.body.existingImages) {
+      const urls = JSON.parse(req.body.existingImages);
+      if (Array.isArray(urls)) {
+        imagenes = imagenes.concat(urls);
+      }
+    }
+    
+    let parsedCaracteristicas;
+    try {
+      parsedCaracteristicas = typeof caracteristicas === 'string'
+        ? JSON.parse(caracteristicas)
+        : caracteristicas;
+    } catch {
+      parsedCaracteristicas = [];
+    }
     const habitacionNueva = {
       identificador,
       nombre,
       imagen: imagenes,
       descripcion: descripcion || '',
       capacidad: Number(capacidad),
-      caracteristicas: Array.isArray(caracteristicas) ? caracteristicas : [caracteristicas],
+      caracteristicas: Array.isArray(parsedCaracteristicas)
+        ? parsedCaracteristicas
+        : [parsedCaracteristicas],
       precio: Number(precio),
       estado: "disponible"
     };
 
     console.log("Datos a guardar:", habitacionNueva);
-    
+
     const crearHabitacion = await servicioHabitacion.createHabitacion(habitacionNueva);
-    
-    res.status(201).send({ 
-      status: "OK", 
-      data: crearHabitacion 
+
+    res.status(201).send({
+      status: "OK",
+      data: crearHabitacion
     });
 
   } catch (error) {
     console.error("Error en createHabitacion:", error);
-    
+
     const errorResponse = {
       status: "FAILED",
       error: {
