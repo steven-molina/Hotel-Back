@@ -135,7 +135,7 @@ const verificarToken = async (req, res, next) => {
     const userid = req.userId;
     const respuesta = await servicioUser.perfil(userid);
     if (!respuesta) {
-      res.status(400).send({ message: "usuario no encontrado" });
+      return res.status(400).send({ message: "usuario no encontrado" });
     }
 
     res.status(200).send({ auth: true, usuario: respuesta });
