@@ -12,6 +12,24 @@ const verificarToken = async (req, res, next) => {
       .json({ auth: false, message: "no tiene token (permiso)" });
   }
 
+  const decoded = jwt.decode(token);
+  const now = Date.now();
+
+  let infoTiempo = {};
+  if (decoded && decoded.exp) {
+    const exp = decoded.exp * 1000; // JWT usa segundos, convertimos a ms
+    const tiempoRestanteMs = exp - now;
+    infoTiempo = {
+      horaActual: new Date(now).toISOString(),
+      expiracionToken: new Date(exp).toISOString(),
+      tiempoRestanteSegundos: Math.max(Math.floor(tiempoRestanteMs / 1000), 0),
+      tiempoRestanteLegible:
+        tiempoRestanteMs > 0
+          ? `${Math.floor(tiempoRestanteMs / 60000)} minutos`
+          : "Expirado"
+    };
+  }
+
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       // 🔍 Manejo detallado de errores comunes
@@ -32,7 +50,12 @@ const verificarToken = async (req, res, next) => {
           break;
       }
 
-      return res.status(403).json({ auth: false, message: mensaje, detalle: err.message });
+      return res.status(403).json({
+        auth: false,
+        message: mensaje,
+        detalle: err.message,
+        ...infoTiempo
+      });
     }
     req.userId = user.id;
     req.userRol = user.rol;
