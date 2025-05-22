@@ -9,7 +9,7 @@ const CrearToken = (userId,rol) => {
       rol: rol
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "24h" }
   );
 };
 
