@@ -1,13 +1,12 @@
 const express = require("express");
-// import all controllers
 const controller = require("../controllers/ControllerHabitacion");
 const verificar = require("../middlewares/VerificarToken");
 
 const routes = express.Router();
 
-// Agrega esto cerca de los otros middlewares
+
 const multer = require('multer');
-const storage = multer.memoryStorage(); // Almacena los archivos en memoria como Buffers
+const storage = multer.memoryStorage(); 
 const upload = multer({ 
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -23,19 +22,19 @@ const upload = multer({
 // Add routes
 routes.get("/habitaciones", controller.getAllHabitaciones);
 
-routes.get("/habitaciones/:id", controller.getOneHabitacion);
+routes.get("/habitaciones/:identificador", controller.getOneHabitacion);
 
 routes.post(
   "/habitaciones",
   verificar.verificarToken,
   verificar.esAdmin,
-  upload.array('imagen'), // Acepta múltiples archivos
+  upload.array('imagen'),
   controller.createHabitacion
 );
 
-routes.put("/habitaciones/:id", verificar.verificarToken, verificar.esAdmin, controller.updateHabitacion);
+routes.put("/habitaciones/:identificador", verificar.verificarToken, verificar.esAdmin, controller.updateHabitacion);
 
-routes.delete("/habitaciones/:id", verificar.verificarToken, verificar.esAdmin,  controller.deleteHabitacion);
+routes.delete("/habitaciones/:identificador", verificar.verificarToken, verificar.esAdmin,  controller.deleteHabitacion);
 
 module.exports = routes;
 //prueba
