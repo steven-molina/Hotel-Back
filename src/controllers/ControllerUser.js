@@ -138,7 +138,7 @@ const verificarToken = async (req, res, next) => {
       return res.status(400).send({ message: "usuario no encontrado" });
     }
 
-    res.status(200).send({ auth: true, usuario: respuesta });
+    next();
   } catch (error) {
     next(error);
   }
