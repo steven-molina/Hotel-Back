@@ -13,7 +13,7 @@ const verificarToken = async (req, res, next) => {
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "token invalido" });
+    if (err) return res.status(403).json({ message: "token invalido",token});
     req.userId = user.id;
     req.userRol = user.rol;
     console.log(user);
