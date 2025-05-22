@@ -14,7 +14,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'https://hotel-front-smoky.vercel.app'];
+const allowedOrigins = ['http://localhost:3000', 'https://hotel-front-smoky.vercel.app','https://frontend-hotel-tawny.vercel.app'];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.includes(origin)) {
