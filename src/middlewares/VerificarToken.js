@@ -13,7 +13,27 @@ const verificarToken = async (req, res, next) => {
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "token invalido",token});
+    if (err) {
+      // 🔍 Manejo detallado de errores comunes
+      let mensaje = "Token inválido";
+
+      switch (err.name) {
+        case "TokenExpiredError":
+          mensaje = "Token expirado";
+          break;
+        case "JsonWebTokenError":
+          mensaje = "Token mal formado o manipulado";
+          break;
+        case "NotBeforeError":
+          mensaje = "Token no está activo aún";
+          break;
+        default:
+          mensaje = "Error de autenticación";
+          break;
+      }
+
+      return res.status(403).json({ auth: false, message: mensaje, detalle: err.message });
+    }
     req.userId = user.id;
     req.userRol = user.rol;
     console.log(user);
