@@ -116,8 +116,8 @@ const createHabitacion = async (req, res) => {
 const updateHabitacion = async (req, res) => {
   try {
     const body = req.body;
-    const id = req.params.id;
-    const respuesta = await servicioHabitacion.updateHabitacion(id, body);
+    const identificador = req.params.identificador;
+    const respuesta = await servicioHabitacion.updateHabitacion(identificador, body);
     res
       .status(200)
       .send({ status: "habitacion actualizada: " + body.nombre, data: respuesta });
@@ -129,11 +129,11 @@ const updateHabitacion = async (req, res) => {
 };
 const deleteHabitacion = async (req, res) => {
   try {
-    const id = req.params.id;
-    const respuesta = await servicioHabitacion.deleteHabitacion(id);
+    const identificador = req.params.identificador;
+    const respuesta = await servicioHabitacion.deleteHabitacion(identificador);
     res
       .status(200)
-      .send({ status: "Habitacion ELiminado" + id, data: respuesta });
+      .send({ status: "Habitacion ELiminado" + identificador, data: respuesta });
   } catch (error) {
     res
       .status(error.status || 500)
