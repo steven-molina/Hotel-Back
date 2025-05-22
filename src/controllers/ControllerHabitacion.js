@@ -126,13 +126,20 @@ const updateHabitacion = async (req, res) => {
     const body = req.body;
     const identificador = req.params.identificador;
     const respuesta = await servicioHabitacion.updateHabitacion(identificador, body);
-    res
-      .status(200)
-      .send({ status: "habitacion actualizada: " + body.nombre, data: respuesta });
+    
+    // Obtener la habitación actualizada para devolverla
+    const habitacionActualizada = await servicioHabitacion.getHabitacionById(identificador);
+    
+    res.status(200).send({ 
+      status: "habitacion actualizada: " + habitacionActualizada.nombre, 
+      data: habitacionActualizada,
+      message:respuesta
+    });
   } catch (error) {
-    res
-      .status(error.status || 500)
-      .send({ status: "failed", data: { error: error.message || error } });
+    res.status(error.status || 500).send({ 
+      status: "failed", 
+      data: { error: error.message || error } 
+    });
   }
 };
 const deleteHabitacion = async (req, res) => {
