@@ -84,7 +84,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const token = TokenCreate.CrearToken(usuario._id, usuario.rol);
+    const token = TokenCreate.CrearToken(usuario);
 
     res.cookie('token', token, {
       httpOnly: true,

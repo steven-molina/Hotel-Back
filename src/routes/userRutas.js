@@ -16,24 +16,23 @@ routes.get("/miperfil", verificar.verificarToken, (req, res) => {
       userRol: req.userRol
   });
 });
-routes.get('/verificar', verificar.verificarToken, (req, res) => {
-  res.status(200).json({
-    auth: true,
-    message: 'Token válido',
-    userId: req.userId,
-    rol: req.userRol
-  });
-});
 
+routes.get("/verificar",verificar.verificarToken, userController.verificarToken);
 
 routes.get("/verificarcorreo", userController.verificarCorreo);
 
 routes.get('/solicitar-recuperacion', userController.solicitarRecuperacion);
 routes.post('/reset-password/:token', userController.resetPassword);
 
-routes.get('/verify', userController.verificarToken, (req, res) => {
-  // Si el middleware pasa, el token es válido
-  res.status(200).json({ auth: true, usuario: req.user });
+routes.get('/verificar', verificar.verificarToken, (req, res) => {
+  res.status(200).json({
+    auth: true,
+    message: 'Token válido',
+    id: req.userId,
+    rol: req.userRol,
+    usuario: req.userUsuario
+  });
 });
+
 
 module.exports = routes;
