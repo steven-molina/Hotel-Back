@@ -63,7 +63,7 @@ const verificarToken = async (req, res, next) => {
     }
     req.userId = user.id;
     req.userRol = user.rol;
-    req.userUsuario = user.nombreusuario;
+    req.userUsuario = user.usuario;
     console.log(user);
     next();
   });

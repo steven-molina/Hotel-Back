@@ -7,7 +7,7 @@ const CrearToken = (usuario) => {
   return jwt.sign(
     { id: usuario._id ,
       rol: usuario.rol,
-      nombreusuario: usuario.nombreUsuario
+      usuario: usuario
     },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
