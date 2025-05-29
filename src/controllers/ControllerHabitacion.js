@@ -21,7 +21,6 @@ const getOneHabitacion = async (req, res) => {
   }
 };
 const createHabitacion = async (req, res) => {
-  // Preparamos un objeto para registrar datos relevantes
   const debugData = {
     body: req.body,
     files: req.files ? req.files.map(f => ({
@@ -35,7 +34,6 @@ const createHabitacion = async (req, res) => {
   try {
     const { identificador, nombre, descripcion, capacidad, caracteristicas, precio } = req.body;
 
-    // Validación básica
     if (!nombre || !identificador || precio <= 0) {
       const errorData = {
         message: "Datos inválidos: nombre, identificador y precio son requeridos",
@@ -131,12 +129,10 @@ const updateHabitacion = async (req, res) => {
     })) : null,
     existingImages: req.body.existingImages ? JSON.parse(req.body.existingImages) : null
   };
-
   try {
     const { nombre, descripcion, capacidad, caracteristicas, precio } = req.body;
     const identificador = req.params.identificador;
 
-    // Validación básica (igual que en creación)
     if (!nombre || precio <= 0) {
       throw {
         status: 400,
@@ -144,7 +140,6 @@ const updateHabitacion = async (req, res) => {
       };
     }
 
-    // Procesar imágenes (igual que en creación)
     let imagenes = [];
     if (req.files?.length > 0) {
       imagenes = req.files.map(file => 
@@ -158,7 +153,6 @@ const updateHabitacion = async (req, res) => {
       }
     }
 
-    // Procesar características (igual que en creación)
     let parsedCaracteristicas;
     try {
       parsedCaracteristicas = typeof caracteristicas === 'string' 
@@ -170,7 +164,7 @@ const updateHabitacion = async (req, res) => {
 
     const updateData = {
       nombre,
-      ...(imagenes.length > 0 && { imagen: imagenes }), // Solo actualiza si hay imágenes
+      ...(imagenes.length > 0 && { imagen: imagenes }),
       descripcion: descripcion || '',
       capacidad: Number(capacidad),
       caracteristicas: Array.isArray(parsedCaracteristicas) 

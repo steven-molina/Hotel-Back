@@ -16,8 +16,15 @@ routes.get("/miperfil", verificar.verificarToken, (req, res) => {
       userRol: req.userRol
   });
 });
+routes.get('/verificar', verificar.verificarToken, (req, res) => {
+  res.status(200).json({
+    auth: true,
+    message: 'Token válido',
+    userId: req.userId,
+    rol: req.userRol
+  });
+});
 
-routes.get("/verificar",verificar.verificarToken, userController.verificarToken);
 
 routes.get("/verificarcorreo", userController.verificarCorreo);
 

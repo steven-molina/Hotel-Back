@@ -36,7 +36,7 @@ routes.put(
   "/habitaciones/:identificador",
   verificar.verificarToken,
   verificar.esAdmin,
-  upload.array('imagen'), // ¡Añade esto!
+  upload.array('imagen'), 
   controller.updateHabitacion
 );
 
