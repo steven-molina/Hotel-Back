@@ -12,7 +12,7 @@ const getAllReservas = async (req, res) => {
 const getReservasUser = async (req, res) => {
   try {
     const identificador = req.params.id;
-    console.log("identif",typeof identificador);
+    console.log("identif", typeof identificador);
     const reservas = await servicioReserva.getReservasUser(identificador.toString());
     res.json(reservas)
   } catch (error) {
@@ -34,49 +34,58 @@ const getOneReserva = async (req, res) => {
 };
 const createReserva = async (req, res) => {
   try {
-    
-    const { identificador, reservas, contacto, precioTotal } = req.body;
-    
-    const reservaNueva = {
-      identificador,
-      reservas,
+    const datosRecibidos = req.body;
+    console.log("➡️ Datos recibidos del front:", JSON.stringify(datosRecibidos, null, 2));
+
+
+    const { habitacion, fechas, huespedes, contacto, pago, usuarioId } = req.body;
+    console.log("hola")
+    // Validar fechas
+    if (new Date(fechas.salida) <= new Date(fechas.ingreso)) {
+      return res.status(400).json({ error: "Fecha de salida debe ser posterior a ingreso" });
+    }
+
+    // Calcular total
+    const noches = fechas.noches;
+    const total = habitacion.precio * noches;
+
+    const reservaData = {
+      usuarioId: usuarioId,
+      identificador: `RES-${Date.now()}`,
+      habitacion,
+      fechas: {
+        ingreso: fechas.ingreso,
+        salida: fechas.salida,
+        noches
+      },
+      huespedes,
       contacto,
-      precioTotal, 
-      usuarioId: req.userId,  
-      creadoPor: req.userRol,
+      pago: {
+        ...pago,
+        monto: total,
+        estado: 'pendiente'
+      },
+      total,
       estado: 'pendiente'
     };
-    
-    const crearReserva = await servicioReserva.createReserva(reservaNueva);
-    
-    const responseData = {
-      identificador: crearReserva.identificador,
-      precioTotal: crearReserva.precioTotal,
-      estado: crearReserva.estado,
-      fechaCreacion: crearReserva.createdAt,
+    console.log("📦 Datos listos para guardar:", JSON.stringify(reservaData, null, 2));
+
+    const nuevaReserva = await servicioReserva.createReserva(reservaData);
+
+    res.status(201).json({
+      success: true,
+      data: nuevaReserva,
       links: {
-        realizarPago: `/api/reservas/${crearReserva.identificador}/pagos`
+        pago: `/api/reservas/${nuevaReserva._id}/pagar`
       }
-    };
-    
-    res.status(201).json({ 
-      status: "OK", 
-      message: "Reserva creada exitosamente. Proceda con el pago para confirmar.",
-      data: responseData
     });
   } catch (error) {
-    console.error("Error al crear reserva:", error);
-    if (error.message.includes("duplicado")) {
-      return res.status(409).json({
-        status: "FAILED",
-        message: "El identificador de reserva ya existe"
-      });
-    }/*
-    res.status(500).json({ 
-      status: "FAILED",
-      message: "Error interno al procesar la reserva",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });*/
+    console.error("❌ Error en createReserva:", error.message, error.stack);
+    res.status(500).json({
+      success: false,
+      message: "Error interno al crear la reserva",
+      detalle: error.message,
+    });
   }
 };
 const updateReserva = async (req, res) => {

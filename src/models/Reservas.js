@@ -2,51 +2,55 @@ const mongoose = require("mongoose");
 
 const reservaSchema = new mongoose.Schema(
   {
+    usuarioId: {  // Añadir referencia explícita al usuario
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true
+    },
     identificador: {
       type: String,
       required: true,
       trim: true,
       unique: true
     },
-    reservas: {
-      fechaIngreso: { type: Date, required: true },
-      fechaSalida: { type: Date, required: true },
-      adultos: { type: Number, required: true },
-      niños: { type: Number, required: true },
-      habitacion: { type: String, required: true }
+    habitacion: {  // Cambiar a objeto para más detalles
+      nombre: { type: String, required: true },
+      id: { type: mongoose.Schema.Types.ObjectId, required: true,ref: "habitaciones" },
+      precio: { type: Number, required: true }
+    },
+    fechas: {
+      ingreso: { type: Date, required: true },
+      salida: { type: Date, required: true },
+      noches: { type: Number, required: true }  // Añadir campo calculado
+    },
+    huespedes: {
+      adultos: { type: Number, required: true, min: 1 },
+      niños: { type: Number, default: 0 }
+
     },
     contacto: {
       nombre: { type: String, required: true },
-      apellido: { type: String, required: true },
-      correo: { type: String, required: true },
-      telefono: { type: Number, required: true }
+      apellido: { type: String },
+      email: { type: String, required: true },
+      telefono: { type: String, required: true }
     },
     pago: {
       metodo: { 
         type: String, 
-        enum: ['efectivo', 'tarjeta', 'transferencia'], 
+        enum: ['tarjeta', 'transferencia', 'efectivo'], 
         required: true 
       },
-      tarjeta: {
-        titular: { type: String },
-        numero: { type: Number },
-        fechaVencimiento: { type: Date },
-        cvv: { type: Number }
-      },
-      transferencia: {
-        referencia: { type: String },
-        banco: { type: String }
-      },
-      montoPagado: { type: Number, required: true },
+      detalles: { type: mongoose.Schema.Types.Mixed }, // Flexible para diferentes métodos
+      monto: { type: Number, required: true },
+      estado: { type: String, enum: ['pendiente', 'completado', 'fallido'], default: 'pendiente' },
       fechaPago: { type: Date }
     },
-    precioTotal: { type: Number, required: true },
     estado: { 
       type: String, 
-      enum: ['pendiente', 'pagada', 'cancelada'], 
+      enum: ['pendiente', 'confirmada', 'cancelada', 'completada'], 
       default: 'pendiente' 
     },
-    checkOutConfirmado: { type: Boolean, default: false }
+    total: { type: Number, required: true }
   },
   { timestamps: true, versionKey: false }
 );
