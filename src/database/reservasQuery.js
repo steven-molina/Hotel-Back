@@ -9,10 +9,10 @@ const getAllReservas = async () => {
     throw { status: 500, message: error.message || error };
   }
 };
-const getOneReserva = async (id) => {
+const getOneReserva = async (usuarioId) => {
   try {
-    const respuesta = await reservasModel.findOne({ identificador: id });
-    return respuesta;
+    const reservas = await reservasModel.find({ usuarioId });
+    return reservas;
   } catch (error) {
     console.log(error.message);
     throw { status: 500, message: error.message || error };
@@ -21,7 +21,7 @@ const getOneReserva = async (id) => {
 const getReservasUser = async (Identificador) => {
   try {
     // throw new Error("error de query")
-    const reservas = await reservasModel.find({identificador: Identificador});
+    const reservas = await reservasModel.find({usuarioId: Identificador});
     return reservas;
   } catch (error) {
     console.log(error.message);

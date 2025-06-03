@@ -11,10 +11,9 @@ const getAllReservas = async (req, res) => {
 };
 const getReservasUser = async (req, res) => {
   try {
-    const identificador = req.params.id;
-    console.log("identif", typeof identificador);
-    const reservas = await servicioReserva.getReservasUser(identificador.toString());
-    res.json(reservas)
+    const usuarioId = req.params.id;
+    const reservas = await servicioReserva.getReservasUser(usuarioId);
+    res.json(reservas);
   } catch (error) {
     res
       .status(error.status || 500)
